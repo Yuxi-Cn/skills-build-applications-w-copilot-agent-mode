@@ -47,3 +47,5 @@ Run the focused contracts in dependency order, then run both builds. The initial
 - Frontend command: `npm test --prefix octofit-tracker/frontend`: currently 15 failures. Failures indicate missing API-backed rendering, route-specific loading/empty/error states, accessible error announcements, or the expected user-specific workout request.
 - Backend build command: `npm run build --prefix octofit-tracker/backend`: run after backend changes; failures indicate TypeScript or backend compile-time integration issues, not API behavior (which the contract suite covers).
 - Frontend build command: `npm run build --prefix octofit-tracker/frontend`: run after frontend changes; failures indicate TypeScript or Vite build issues, not presentation behavior (which the frontend contract suite covers).
+
+# 
