@@ -43,8 +43,29 @@ export async function listTeams() {
   return Team.find().lean();
 }
 
-export async function createTeam(_input: unknown) {
-  throw Object.assign(new Error('Team validation is not implemented yet'), { status: 501 });
+export async function createTeam(input: unknown) {
+  if (!input || typeof input !== 'object' || Array.isArray(input)) {
+    throw Object.assign(new Error('Team request must be an object'), { status: 400 });
+  }
+
+  const { name, mascot, members = [] } = input as Record<string, unknown>;
+  if (typeof name !== 'string' || !name.trim()) {
+    throw Object.assign(new Error('A team name is required'), { status: 400 });
+  }
+  if (typeof mascot !== 'string' || !mascot.trim()) {
+    throw Object.assign(new Error('A team mascot is required'), { status: 400 });
+  }
+  if (!Array.isArray(members) || members.some((member) => typeof member !== 'string' || !Types.ObjectId.isValid(member))) {
+    throw Object.assign(new Error('Team members must be valid user IDs'), { status: 400 });
+  }
+
+  const memberIds = [...new Set(members as string[])];
+  const existingMembers = await User.find({ _id: { $in: memberIds } }).select('_id').lean();
+  if (existingMembers.length !== memberIds.length) {
+    throw Object.assign(new Error('One or more team members were not found'), { status: 404 });
+  }
+
+  return Team.create({ name: name.trim(), mascot: mascot.trim(), members: memberIds });
 }
 
 export async function getLeaderboard() {
